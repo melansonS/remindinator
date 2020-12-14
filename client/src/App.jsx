@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 
 function App() {
   const ping = async () => {
     const response = await fetch('http://localhost:8888');
-    const body = await response.text();
-    console.log(body);
+    const body = await response.json();
+    if (body.success) {
+      console.log(body.users);
+    } else {
+      console.log('Error');
+    }
   };
-  ping();
+  useEffect(() => {
+    ping();
+  });
 
   return (
     <div className="App">

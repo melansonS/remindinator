@@ -1,13 +1,29 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const cors = require('cors');
+
+const db = require('./db');
 
 app.use(cors({
   origin: 'http://localhost:3000'
 }))
 
-app.use("/", (req, res) => {
-  res.send("Hello world!");
+app.use("/", async (req, res) => {
+  try {
+    const results = await db.query("select * from users");
+    res.send({
+      success: true,
+      users : results.rows
+    });
+
+  }
+  catch(err){
+    console.log(err)
+    res.send({
+      success: false
+    })
+  }
 });
 
 app.listen(8888, () => {
