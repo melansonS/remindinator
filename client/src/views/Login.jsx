@@ -4,7 +4,7 @@ import { Link, useHistory } from 'react-router-dom';
 
 const Login = (props) => {
   const { handleLoggedUpdate } = props;
-  const [usernameInput, setUsernameInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const history = useHistory();
@@ -14,7 +14,7 @@ const Login = (props) => {
     const response = await fetch('http://localhost:8888/login', {
       credentials: 'include',
       body: JSON.stringify({
-        username: usernameInput,
+        email: emailInput,
         password: passwordInput,
       }),
       headers: { 'content-type': 'application/json' },
@@ -26,6 +26,7 @@ const Login = (props) => {
       handleLoggedUpdate(true);
       history.push('/dashboard');
     } else {
+      console.log(body.errorMessage);
       setErrorMessage(body.errorMessage);
     }
   };
@@ -35,8 +36,8 @@ const Login = (props) => {
       <Link to="/">Signup</Link>
       <form onSubmit={handleLoginSubmit}>
         <input
-          onChange={(e) => setUsernameInput(e.target.value)}
-          placeholder="username"
+          onChange={(e) => setEmailInput(e.target.value)}
+          placeholder="email"
           required
           type="text"
         />
