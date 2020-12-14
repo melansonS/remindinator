@@ -7,7 +7,9 @@ import Dashboard from './views/Dashboard';
 
 function App() {
   const ping = async () => {
-    const response = await fetch('http://localhost:8888');
+    const response = await fetch('http://localhost:8888', {
+      credentials: 'include',
+    });
     const body = await response.json();
     if (body.success) {
       console.log(body.users);
@@ -24,16 +26,16 @@ function App() {
       <div className="App">
         <header className="App-header">
           <h1> Hello world!</h1>
+          <Route path="/" exact>
+            <Signup />
+          </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/dashboard">
+            <Dashboard />
+          </Route>
         </header>
-        <Route path="/" exact>
-          <Signup />
-        </Route>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/dashboard">
-          <Dashboard />
-        </Route>
       </div>
     </Router>
   );
