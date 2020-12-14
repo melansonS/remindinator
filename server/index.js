@@ -46,8 +46,7 @@ app.post('/login', async (req, res) => {
     if (results.rows[0].password === req.body.password){
       console.log("Correct password ? ", results.rows[0].password === req.body.password)
       const sid = nanoid();
-      const insert = await db.query("update cookies set sid = $1 where name = $2",[sid, req.body.username]);
-      console.log("INSERT> _> ))))))))))))))))",insert);
+      const update = await db.query("update cookies set sid = $1 where name = $2",[sid, req.body.username]);
       res.cookie("sid", sid);
       res.send({
         success: true,
@@ -70,11 +69,31 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/signup', (req, res) => {
-  console.log(req.cookies.sid);
-  res.send({
-    success: true
-  })
+app.post('/signup', async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  const sid = nanoid();
+  try {
+    const results = await db.query("INSERT INTO users (name, password) values($1, $2)", [username, password]);
+    const insert = await db.query("INSERT INTO cookies(sid, name) values($1, $2)",[sid, username]);
+    res.send({
+      success: true
+    });
+  }
+  catch(err){
+    // There is a UNIQUE constraint on names in the users table
+    // if username already exists in the users Table, error code 23505
+    if(err.code === '23505'){
+      return res.send({
+        success: false,
+        errorMessage: "Username already in use",
+      })
+    }
+    res.status(500).send( {
+      success: false,
+      errorMessage: "Something went wrong",
+    });
+  }
 });
 
 app.listen(8888, () => {
