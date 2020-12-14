@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 const Login = () => {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const routerhistory = useHistory();
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +21,7 @@ const Login = () => {
     const body = await response.json();
     if (body.success) {
       console.log(body);
+      routerhistory.push('/dashboard');
     } else {
       setErrorMessage(body.errorMessage);
     }

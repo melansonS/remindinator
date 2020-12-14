@@ -30,6 +30,29 @@ app.get("/", async (req, res) => {
   }
 });
 
+app.post("/auto-login", async (req, res) => {
+  console.log("Cookie:", req.cookies.sid)
+  try {
+    const results = await db.query("select * from cookies where sid = $1", [req.cookies.sid]);
+    if(results.rows[0]){
+      res.send({
+        success: true,
+      });
+    } else {
+      res.send({
+        success: false,
+      })
+    }
+  }
+  catch(err){
+    console.log(err)
+    res.send({
+      success: false,
+      errorMessage: "Something went wrong",
+    })
+  }
+});
+
 app.post('/login', async (req, res) => {
   console.log(`Login hit =============`);
   console.log("COOKIE??", req.cookies);
@@ -68,6 +91,24 @@ app.post('/login', async (req, res) => {
     })
   }
 });
+
+app.post('/logout', async (req, res) => {
+  const sid = req.cookies.sid;
+  //set the session id for the current user to null
+  try {
+    const results = await db.query("UPDATE cookies SET sid = $1 WHERE sid = $2", [null, sid]);
+    console.log(results);
+    res.send({
+      success: true
+    });
+  }
+  catch(err){
+    res.status(500).send( {
+      success: false,
+      errorMessage: "Something went wrong",
+    });
+  }
+})
 
 app.post('/signup', async (req, res) => {
   const username = req.body.username;
