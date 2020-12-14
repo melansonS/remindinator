@@ -117,6 +117,7 @@ app.post('/signup', async (req, res) => {
   try {
     const results = await db.query("INSERT INTO users (name, password) values($1, $2)", [username, password]);
     const insert = await db.query("INSERT INTO cookies(sid, name) values($1, $2)",[sid, username]);
+    res.cookie("sid", sid);
     res.send({
       success: true
     });
@@ -130,6 +131,7 @@ app.post('/signup', async (req, res) => {
         errorMessage: "Username already in use",
       })
     }
+    console.log("ERROR", err)
     res.status(500).send( {
       success: false,
       errorMessage: "Something went wrong",

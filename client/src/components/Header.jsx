@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 
 const Header = (props) => {
-  const { isLoggedIn } = props;
+  const { handleLoggedUpdate } = props;
   const history = useHistory();
 
   const logoutSubmit = async () => {
@@ -13,7 +13,7 @@ const Header = (props) => {
     });
     const body = await response.json();
     if (body.success) {
-      // setIsLoggedIn(false);
+      handleLoggedUpdate(false);
       history.push('/login');
     }
     console.log(body);
@@ -31,7 +31,7 @@ const Header = (props) => {
 };
 
 Header.propTypes = {
-  isLoggedIn: PropTypes.bool.isRequired,
+  handleLoggedUpdate: PropTypes.func.isRequired,
 };
 
 export default Header;

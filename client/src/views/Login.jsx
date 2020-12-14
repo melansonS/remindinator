@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
 
-const Login = () => {
+const Login = (props) => {
+  const { handleLoggedUpdate } = props;
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const routerhistory = useHistory();
+  const history = useHistory();
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +23,8 @@ const Login = () => {
     const body = await response.json();
     if (body.success) {
       console.log(body);
-      routerhistory.push('/dashboard');
+      handleLoggedUpdate(true);
+      history.push('/dashboard');
     } else {
       setErrorMessage(body.errorMessage);
     }
@@ -47,6 +50,10 @@ const Login = () => {
       </form>
     </div>
   );
+};
+
+Login.propTypes = {
+  handleLoggedUpdate: PropTypes.func.isRequired,
 };
 
 export default Login;

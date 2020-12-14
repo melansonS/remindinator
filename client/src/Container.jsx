@@ -10,6 +10,10 @@ const Container = () => {
   const history = useHistory();
   const location = useLocation();
 
+  const handleLoggedUpdate = (value) => {
+    setIsLoggedIn(value);
+  };
+
   const autoLogin = async () => {
     const response = await fetch('http://localhost:8888/auto-login', {
       credentials: 'include',
@@ -29,13 +33,12 @@ const Container = () => {
 
   return (
     <div>
-      { isLoggedIn && (<Header isLoggedIn={isLoggedIn} />)}
-      <h1> Hello world!</h1>
+      { isLoggedIn && (<Header handleLoggedUpdate={handleLoggedUpdate} />)}
       <Route path="/" exact>
-        <Signup />
+        <Signup handleLoggedUpdate={handleLoggedUpdate} />
       </Route>
       <Route path="/login">
-        <Login />
+        <Login handleLoggedUpdate={handleLoggedUpdate} />
       </Route>
       <Route path="/dashboard">
         <Dashboard />

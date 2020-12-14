@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Link, useHistory } from 'react-router-dom';
 
-const Signup = () => {
+const Signup = (props) => {
+  const { handleLoggedUpdate } = props;
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const history = useHistory();
 
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +23,8 @@ const Signup = () => {
     const body = await response.json();
     if (body.success) {
       console.log(body);
+      handleLoggedUpdate(true);
+      history.push('/dashboard');
     } else {
       setErrorMessage(body.errorMessage);
       console.log(body.errorMessage);
@@ -46,6 +51,10 @@ const Signup = () => {
       </form>
     </div>
   );
+};
+
+Signup.propTypes = {
+  handleLoggedUpdate: PropTypes.func.isRequired,
 };
 
 export default Signup;
