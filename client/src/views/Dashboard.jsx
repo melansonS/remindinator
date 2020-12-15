@@ -9,6 +9,7 @@ const Dashboard = (props) => {
   const [newReminderValue, setNewReminderValue] = useState('');
 
   const getReminders = async (id) => {
+    if (!id) { return null; }
     const response = await fetch('http://localhost:8888/reminders', {
       method: 'POST',
       body: JSON.stringify({ id }),
@@ -19,6 +20,7 @@ const Dashboard = (props) => {
       setReminders(body.reminders);
     }
     console.log(body);
+    return null;
   };
 
   const handleDeleteReminder = async (id) => {

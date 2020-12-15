@@ -4,10 +4,11 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
 const { nanoid } = require('nanoid');
-const sgMail = require('@sendgrid/mail');
+const schedule = require('node-schedule');
+const db = require('./db');
+const sgMail = require('./sengrid');
 
 const app = express();
-const db = require('./db');
 
 app.use(cookieParser());
 app.use(cors({
@@ -15,19 +16,18 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-const msg = {
-  to: process.env.RECIPIENT_EMAIL,
-  from: 'assignment@volume7.ca',
-  subject: 'Sending with Twilio SendGrid is Fun',
-  text: 'and easy to do anywhere, even with Node.js',
-  html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-};
+
+const cronRule = new schedule.RecurrenceRule();
+cronRule.hour = 5;
+cronRule.minute = 45;
+// TODO: update job to actually send the email
+const dailyEmailReminder = schedule.scheduleJob(cronRule, () => {
+  console.log('Running job');
+});
 
 app.get('/send-email', async (req, res) => {
   try {
-    const email = await sgMail.send(msg);
-    console.log(email);
+    await sgMail.sendMail(process.env.RECIPIENT_EMAIL, 'What excellent email content!');
     return res.send({
       success: true,
     });
@@ -97,7 +97,6 @@ app.post('/login', async (req, res) => {
     const validPassword = await bcrypt.compare(password, results.rows[0].hash);
     // If bcrypt validates the password when compared to the hash, log them in
     if (validPassword) {
-      console.log('Correct password ? ', validPassword);
       const sid = nanoid();
       // update the current user's session id
       const update = await db.query('update sessions set sid = $1 where email = $2', [sid, email]);

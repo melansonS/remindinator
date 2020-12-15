@@ -41,15 +41,27 @@ const Container = () => {
   return (
     <div>
       { isLoggedIn && (<Header handleLoggedUpdate={handleLoggedUpdate} />)}
-      <Route path="/" exact>
-        <Signup handleLoggedUpdate={handleLoggedUpdate} handleUserIdUpdate={handleUserIdUpdate} />
-      </Route>
-      <Route path="/login">
-        <Login handleLoggedUpdate={handleLoggedUpdate} handleUserIdUpdate={handleUserIdUpdate} />
-      </Route>
-      <Route path="/dashboard">
-        <Dashboard userId={userId} />
-      </Route>
+      { isLoggedIn ? (
+        <Route path="/dashboard">
+          <Dashboard userId={userId} />
+        </Route>
+      ) : (
+        <>
+          <Route path="/" exact>
+            <Signup
+              handleLoggedUpdate={handleLoggedUpdate}
+              handleUserIdUpdate={handleUserIdUpdate}
+            />
+          </Route>
+          <Route path="/login">
+            <Login
+              handleLoggedUpdate={handleLoggedUpdate}
+              handleUserIdUpdate={handleUserIdUpdate}
+            />
+          </Route>
+        </>
+      )}
+
     </div>
   );
 };
