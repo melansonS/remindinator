@@ -13,7 +13,7 @@ const buildEmail = (recipient, content) => ({
 const sendMail = async (recipient, content) => {
   const msg = buildEmail(recipient, content);
   const email = await sgMail.send(msg);
-  console.log(email);
+  return email;
 };
 
 module.exports = {

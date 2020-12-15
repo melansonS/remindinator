@@ -7,6 +7,7 @@ const { nanoid } = require('nanoid');
 const schedule = require('node-schedule');
 const db = require('./db');
 const sgMail = require('./sengrid');
+const scheduler = require('./scheduler');
 
 const app = express();
 
@@ -17,12 +18,18 @@ app.use(cors({
 }));
 app.use(express.json());
 
-const cronRule = new schedule.RecurrenceRule();
-cronRule.hour = 5;
-cronRule.minute = 45;
-// TODO: update job to actually send the email
-const dailyEmailReminder = schedule.scheduleJob(cronRule, () => {
+const dailyEmailReminder = schedule.scheduleJob(scheduler.cronRule, async () => {
   console.log('Running job');
+  try {
+    const email = await sgMail.sendMail(process.env.RECIPIENT_EMAIL, 'What excellent email content!');
+    console.log('EMAIL SENT!', email);
+  } catch (error) {
+    console.error(error);
+
+    if (error.response) {
+      console.error(error.response.body);
+    }
+  }
 });
 
 app.get('/send-email', async (req, res) => {
