@@ -40,7 +40,7 @@ const Container = () => {
 
   return (
     <div>
-      { isLoggedIn && (<Header handleLoggedUpdate={handleLoggedUpdate} />)}
+      <Header handleLoggedUpdate={handleLoggedUpdate} isLoggedIn={isLoggedIn} />
       { isLoggedIn ? (
         <Route path="/dashboard">
           <Dashboard userId={userId} />

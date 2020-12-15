@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
+import { Button, Form } from 'antd';
+import AuthForm from '../components/AuthForm';
+import ErrorAlert from '../components/ErrorAlert';
 
 const Signup = (props) => {
   const { handleLoggedUpdate, handleUserIdUpdate } = props;
-  const [emailInput, setEmailInput] = useState('');
-  const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const history = useHistory();
+  const [form] = Form.useForm();
 
-  const handleSignupSubmit = async (e) => {
-    e.preventDefault();
+  const onFinish = async (values) => {
+    const { email, password } = values;
     const response = await fetch('http://localhost:8888/signup', {
       credentials: 'include',
       body: JSON.stringify({
-        email: emailInput,
-        password: passwordInput,
+        email,
+        password,
       }),
       headers: { 'content-type': 'application/json' },
       method: 'POST',
@@ -29,28 +31,18 @@ const Signup = (props) => {
       history.push('/dashboard');
     } else {
       setErrorMessage(body.errorMessage);
+      form.resetFields();
       console.log(body.errorMessage);
     }
   };
   return (
     <div>
       <h1>Signup</h1>
-      <Link to="/login">Login</Link>
-      <form onSubmit={handleSignupSubmit}>
-        <input
-          onChange={(e) => setEmailInput(e.target.value)}
-          placeholder="email"
-          required
-          type="text"
-        />
-        <input
-          onChange={(e) => setPasswordInput(e.target.value)}
-          placeholder="Password"
-          required
-          type="text"
-        />
-        <input type="submit" />
-      </form>
+      <AuthForm form={form} onFinish={onFinish} submitValue="Sign up" validatePassword />
+      {errorMessage && (<ErrorAlert errorMessage={errorMessage} />)}
+      <Button type="link">
+        <Link to="/login">Login</Link>
+      </Button>
     </div>
   );
 };
