@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
 import { Button, Form } from 'antd';
-import 'antd/dist/antd.css';
 import AuthForm from '../components/AuthForm';
 import ErrorAlert from '../components/ErrorAlert';
 
@@ -11,7 +10,6 @@ const Login = (props) => {
   const [errorMessage, setErrorMessage] = useState('');
   const history = useHistory();
   const [form] = Form.useForm();
-  console.log(form);
 
   const onFinish = async (values) => {
     const { email, password } = values;
@@ -39,13 +37,16 @@ const Login = (props) => {
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h1>Login</h1>
       <AuthForm form={form} onFinish={onFinish} submitValue="Log in" />
       {errorMessage && (<ErrorAlert errorMessage={errorMessage} />)}
-      <Button type="link">
-        <Link to="/">Signup</Link>
-      </Button>
+      <div className="auth-redirect">
+        <p> Don&apos;t have an account yet? :</p>
+        <Button type="link">
+          <Link to="/">Signup</Link>
+        </Button>
+      </div>
     </div>
   );
 };

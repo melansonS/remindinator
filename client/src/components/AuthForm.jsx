@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Form, Input } from 'antd';
-import 'antd/dist/antd.css';
 
 const AuthForm = (props) => {
   const {
@@ -21,6 +20,7 @@ const AuthForm = (props) => {
       layout="vertical"
       name="register"
       onFinish={onFinish}
+      requiredMark={false}
     >
       <Form.Item
         name="email"

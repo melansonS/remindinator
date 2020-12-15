@@ -1,38 +1,102 @@
 .App {
-  text-align: center;
+  height: 100vh;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+.app-header {
   align-items: center;
-  justify-content: center;
+  background-color: #282c34;
+  display: flex;
   font-size: calc(10px + 2vmin);
+  justify-content: center;
+  position: relative;
+}
+
+.app-header-logout {
+  position: absolute;
+  left: 30px;
+  top: 30px;
+}
+
+.app-header-title {
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.auth-redirect {
+  align-self: center;
+  display: flex;
+  justify-content: center;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.auth-redirect p {
+  align-self: center;
+  margin: 0;
+}
+
+.container {
+  background-color: rgb(250, 250, 250);
+  height: 100%;
+}
+
+.dashboard-add-reminder {
+  margin: 0 auto 40px;
+  width: 40%;
+}
+
+.dashboard-header { 
+  font-size: 45px;
+}
+
+.dashboard-reminder {
+  margin: 1.16%; /* (100-31*3)/6 */
+  position: relative;
+  text-align: start;
+  width: 31%;
+}
+
+.dashboard-reminder:hover {
+  background-color: rgb(240, 240, 240);
+  transition: background-color 0.3s ease;
+}
+
+.dashboard-reminder-container {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.dashboard-reminder-delete {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.login-container,
+.signup-container {
+  margin: 80px auto 0;
+  width: 50%;
+}
+
+.main-container {
+  text-align: center;
+}
+
+@media only screen and (max-width: 680px) {
+  .app-header-logout {
+    left: 15px;
+    top: inherit;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .dashboard-add-reminder {
+    width: 80%;
   }
+
+  .dashboard-header { 
+    font-size: 35px;
+  }
+
+  .dashboard-reminder {
+    margin: 2.5%; /* (100-31*3)/4 */
+    position: relative;
+    text-align: start;
+    width: 45%;
+  }
+
 }

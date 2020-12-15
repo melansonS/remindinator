@@ -36,13 +36,16 @@ const Signup = (props) => {
     }
   };
   return (
-    <div>
+    <div className="login-container">
       <h1>Signup</h1>
       <AuthForm form={form} onFinish={onFinish} submitValue="Sign up" validatePassword />
       {errorMessage && (<ErrorAlert errorMessage={errorMessage} />)}
-      <Button type="link">
-        <Link to="/login">Login</Link>
-      </Button>
+      <div className="auth-redirect">
+        <p> Already have an account? :</p>
+        <Button type="link">
+          <Link to="/login">Login</Link>
+        </Button>
+      </div>
     </div>
   );
 };

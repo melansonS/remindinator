@@ -39,28 +39,30 @@ const Container = () => {
   }, []);
 
   return (
-    <div>
+    <div className="container">
       <Header handleLoggedUpdate={handleLoggedUpdate} isLoggedIn={isLoggedIn} />
-      { isLoggedIn ? (
-        <Route path="/dashboard">
-          <Dashboard userId={userId} />
-        </Route>
-      ) : (
-        <>
-          <Route path="/" exact>
-            <Signup
-              handleLoggedUpdate={handleLoggedUpdate}
-              handleUserIdUpdate={handleUserIdUpdate}
-            />
+      <div className="main-container">
+        { isLoggedIn ? (
+          <Route path="/dashboard">
+            <Dashboard userId={userId} />
           </Route>
-          <Route path="/login">
-            <Login
-              handleLoggedUpdate={handleLoggedUpdate}
-              handleUserIdUpdate={handleUserIdUpdate}
-            />
-          </Route>
-        </>
-      )}
+        ) : (
+          <>
+            <Route path="/" exact>
+              <Signup
+                handleLoggedUpdate={handleLoggedUpdate}
+                handleUserIdUpdate={handleUserIdUpdate}
+              />
+            </Route>
+            <Route path="/login">
+              <Login
+                handleLoggedUpdate={handleLoggedUpdate}
+                handleUserIdUpdate={handleUserIdUpdate}
+              />
+            </Route>
+          </>
+        )}
+      </div>
 
     </div>
   );

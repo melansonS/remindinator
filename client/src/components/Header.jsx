@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { Button } from 'antd';
+import { LogoutOutlined } from '@ant-design/icons';
 
 const Header = (props) => {
   const { handleLoggedUpdate, isLoggedIn } = props;
@@ -21,14 +22,17 @@ const Header = (props) => {
   };
 
   return (
-    <div>
-      <h1>Reminderizer!</h1>
+    <div className="app-header">
+      <h1 className="app-header-title">Reminderizer!</h1>
       {isLoggedIn && (
-        <div>
-          You&apos;re logged in!
-          {' '}
-          <Button type="button" onClick={logoutSubmit}>Log out</Button>
-        </div>
+      <Button
+        className="app-header-logout"
+        onClick={logoutSubmit}
+        shape="circle"
+        title="Log out"
+      >
+        <LogoutOutlined />
+      </Button>
       )}
     </div>
   );

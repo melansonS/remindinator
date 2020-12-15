@@ -1,13 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button, Card } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 
 const Reminder = (props) => {
   const { id, text, deleteReminder } = props;
   return (
-    <div>
+    <Card className="dashboard-reminder">
       {text}
-      <button type="button" onClick={() => { deleteReminder(id); }}>X</button>
-    </div>
+      <Button
+        className="dashboard-reminder-delete"
+        onClick={() => deleteReminder(id)}
+        shape="circle"
+        size="small"
+        title="Delete Reminder"
+        type="ghost"
+      >
+        <CloseOutlined />
+      </Button>
+    </Card>
   );
 };
 

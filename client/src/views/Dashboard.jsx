@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { Button, Input } from 'antd';
 import Reminder from '../components/Reminder';
 
 const Dashboard = (props) => {
   const { userId } = props;
   const [reminders, setReminders] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
   const [newReminderValue, setNewReminderValue] = useState('');
 
   const getReminders = async (id) => {
@@ -39,9 +39,14 @@ const Dashboard = (props) => {
   };
 
   const handleAddReminder = async () => {
+    // ensure that there is at least a word character or a digit
+    // prevents users from sending reminders that look empty ie '\n'
+    const regex = /[\w\d]/;
+    const found = newReminderValue.match(regex);
+    if (!found) { return null; }
     const response = await fetch('http://localhost:8888/add-reminder', {
       method: 'POST',
-      body: JSON.stringify({ reminder: newReminderValue, userId }),
+      body: JSON.stringify({ reminder: newReminderValue.trim(), userId }),
       headers: { 'content-type': 'application/json' },
     });
     const body = await response.json();
@@ -51,6 +56,7 @@ const Dashboard = (props) => {
       setNewReminderValue('');
     }
     console.log(body);
+    return null;
   };
 
   useEffect(() => {
@@ -59,23 +65,32 @@ const Dashboard = (props) => {
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      <h3>
-        ID:
-        {' '}
-        {userId}
-      </h3>
-      <div>
-        <input type="text" value={newReminderValue} onChange={(e) => setNewReminderValue(e.target.value)} />
-        <input type="button" value="Add Reminder!" onClick={handleAddReminder} />
-      </div>
-      {reminders && reminders.map((item) => (
-        <Reminder
-          deleteReminder={handleDeleteReminder}
-          id={item.id}
-          text={item.reminder}
+      <h1 className="dashboard-header">Dashboard</h1>
+      <div className="dashboard-add-reminder">
+        <Input.TextArea
+          showCount
+          maxLength={140}
+          onChange={(e) => setNewReminderValue(e.target.value)}
+          placeholder="Add a new reminder ..."
+          value={newReminderValue}
         />
-      ))}
+        <Button
+          onClick={handleAddReminder}
+          type="default"
+        >
+          Add reminder!
+        </Button>
+      </div>
+      <div className="dashboard-reminder-container">
+        {reminders && reminders.map((item) => (
+          <Reminder
+            deleteReminder={handleDeleteReminder}
+            id={item.id}
+            key={`dashboard-reminder-${item.id}`}
+            text={item.reminder}
+          />
+        ))}
+      </div>
     </div>
   );
 };
