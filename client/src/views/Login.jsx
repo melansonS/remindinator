@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
 
 const Login = (props) => {
-  const { handleLoggedUpdate } = props;
+  const { handleLoggedUpdate, handleUserIdUpdate } = props;
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,6 +24,8 @@ const Login = (props) => {
     if (body.success) {
       console.log(body);
       handleLoggedUpdate(true);
+      handleUserIdUpdate(body.userId);
+      // navigate directly to the Dashboard
       history.push('/dashboard');
     } else {
       console.log(body.errorMessage);
@@ -55,6 +57,7 @@ const Login = (props) => {
 
 Login.propTypes = {
   handleLoggedUpdate: PropTypes.func.isRequired,
+  handleUserIdUpdate: PropTypes.func.isRequired,
 };
 
 export default Login;

@@ -32,12 +32,13 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/auto-login", async (req, res) => {
-  console.log("Cookie:", req.cookies.sid)
+  // if there is user tied to this session, automatically log them in 
   try {
-    const results = await db.query("select * from sessions where sid = $1", [req.cookies.sid]);
+    const results = await db.query("select * from users where email IN (select email from sessions where sid = $1)", [req.cookies.sid]);
     if(results.rows[0]){
       res.send({
         success: true,
+        userId: results.rows[0].id,
       });
     } else {
       res.send({
@@ -68,14 +69,16 @@ app.post('/login', async (req, res) => {
       });
     }
     const validPassword = await bcrypt.compare(password, results.rows[0].hash);
-    // If the password matches -> Success
+    // If bcrypt validates the password when compared to the hash, log them in
     if (validPassword){
       console.log("Correct password ? ", validPassword)
       const sid = nanoid();
+      // update the current user's session id
       const update = await db.query("update sessions set sid = $1 where email = $2",[sid, email]);
       res.cookie("sid", sid);
       res.send({
         success: true,
+        userId: results.rows[0].id,
       });
     } 
     // Else incorect password, return error message
@@ -116,12 +119,14 @@ app.post('/signup', async (req, res) => {
   const {email, password} = req.body;
   const sid = nanoid();
   try {
+    // hash given password
     const hash = await bcrypt.hash(password, 10);
-    const results = await db.query("INSERT INTO users (email, hash) values($1, $2)", [email, hash]);
+    const results = await db.query("INSERT INTO users (email, hash) values($1, $2) RETURNING id", [email, hash]);
     const insert = await db.query("INSERT INTO sessions(sid, email) values($1, $2)",[sid, email]);
     res.cookie("sid", sid);
     res.send({
-      success: true
+      success: true,
+      userId: results.rows[0].id,
     });
   }
   catch(err){
@@ -133,6 +138,60 @@ app.post('/signup', async (req, res) => {
         errorMessage: "Email already in use",
       })
     }
+    console.log("ERROR", err)
+    res.status(500).send( {
+      success: false,
+      errorMessage: "Something went wrong",
+    });
+  }
+});
+
+app.post('/reminders/', async (req,res) => {
+  const { id } = req.body;
+  // return all Reminders tied to a User's id
+  try{
+    const results = await db.query('SELECT * FROM reminders WHERE user_id = $1', [id])
+    res.send({
+      success: true,
+      reminders: results.rows
+    })
+  } catch(err) {
+    console.log("ERROR", err)
+    res.status(500).send( {
+      success: false,
+      errorMessage: "Something went wrong",
+    });
+  }
+});
+
+app.post('/add-reminder', async (req, res) => {
+  const {reminder, userId} = req.body;
+  // Add a single Reminder and return it
+  try {
+    const insert = await db.query("INSERT INTO reminders(user_id, reminder) VALUES($1, $2) RETURNING *", [userId, reminder]);
+    console.log("INSERT", insert);
+    res.send({
+      success: true,
+      reminder: insert.rows[0]
+    })
+  } catch (err){
+    console.log("ERROR", err)
+    res.status(500).send( {
+      success: false,
+      errorMessage: "Something went wrong",
+    });
+  }
+});
+
+app.post('/delete-reminder', async (req, res) => {
+  const { id } = req.body;
+  // delete a single reminder 
+  try {
+    const del = await db.query("DELETE FROM reminders WHERE id = $1", [id]);
+    res.send({
+      success: true
+    })
+  } catch (err){
     console.log("ERROR", err)
     res.status(500).send( {
       success: false,

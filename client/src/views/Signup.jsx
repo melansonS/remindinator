@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
 
 const Signup = (props) => {
-  const { handleLoggedUpdate } = props;
+  const { handleLoggedUpdate, handleUserIdUpdate } = props;
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,6 +24,8 @@ const Signup = (props) => {
     if (body.success) {
       console.log(body);
       handleLoggedUpdate(true);
+      handleUserIdUpdate(body.userId);
+      // navigate directly to the Dashboard
       history.push('/dashboard');
     } else {
       setErrorMessage(body.errorMessage);
@@ -55,6 +57,7 @@ const Signup = (props) => {
 
 Signup.propTypes = {
   handleLoggedUpdate: PropTypes.func.isRequired,
+  handleUserIdUpdate: PropTypes.func.isRequired,
 };
 
 export default Signup;
