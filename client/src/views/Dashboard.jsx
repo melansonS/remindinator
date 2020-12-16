@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Input } from 'antd';
+import { Button, Divider, Input } from 'antd';
 import Reminder from '../components/Reminder';
 
 const Dashboard = (props) => {
@@ -72,6 +72,7 @@ const Dashboard = (props) => {
           maxLength={140}
           onChange={(e) => setNewReminderValue(e.target.value)}
           placeholder="Add a new reminder ..."
+          rows={4}
           value={newReminderValue}
         />
         <Button
@@ -81,6 +82,7 @@ const Dashboard = (props) => {
           Add reminder!
         </Button>
       </div>
+      <Divider />
       <div className="dashboard-reminder-container">
         {reminders && reminders.map((item) => (
           <Reminder

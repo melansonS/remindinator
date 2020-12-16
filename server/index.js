@@ -177,7 +177,7 @@ app.post('/reminders/', async (req, res) => {
   const { id } = req.body;
   // return all Reminders tied to a User's id
   try {
-    const results = await db.query('SELECT * FROM reminders WHERE user_id = $1', [id]);
+    const results = await db.query('SELECT * FROM reminders WHERE user_id = $1 ORDER BY id ASC', [id]);
     return res.send({
       success: true,
       reminders: results.rows,
