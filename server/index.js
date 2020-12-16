@@ -6,7 +6,7 @@ const express = require('express');
 const { nanoid } = require('nanoid');
 const schedule = require('node-schedule');
 const db = require('./db');
-const sgMail = require('./sengrid');
+const sendgrid = require('./sendgrid');
 const scheduler = require('./scheduler');
 
 const app = express();
@@ -19,10 +19,9 @@ app.use(cors({
 app.use(express.json());
 
 const dailyEmailReminder = schedule.scheduleJob(scheduler.cronRule, async () => {
-  console.log('Running job');
   try {
-    const email = await sgMail.sendMail(process.env.RECIPIENT_EMAIL, 'What excellent email content!');
-    console.log('EMAIL SENT!', email);
+    const email = await sendgrid.sendEmails();
+    console.log('EMAILS SENT!', email);
   } catch (error) {
     console.error(error);
 
@@ -34,16 +33,19 @@ const dailyEmailReminder = schedule.scheduleJob(scheduler.cronRule, async () => 
 
 app.get('/send-email', async (req, res) => {
   try {
-    await sgMail.sendMail(process.env.RECIPIENT_EMAIL, 'What excellent email content!');
+    // get all users that have reminders
+    const users = await db.query('SELECT id, email FROM users WHERE EXISTS (SELECT user_id FROM reminders WHERE users.id = reminders.user_id)');
+    users.rows.forEach(async ({ id, email }) => {
+      // get the reminders tied to each of the users
+      const results = await db.query('SELECT reminder FROM reminders WHERE user_id = $1 ORDER BY id ASC', [id]);
+      const reminders = results.rows.map((row) => row.reminder);
+      await sendgrid.sendMail(email, reminders);
+    });
     return res.send({
       success: true,
     });
-  } catch (error) {
-    console.error(error);
-
-    if (error.response) {
-      console.error(error.response.body);
-    }
+  } catch (err) {
+    console.error(err);
     return res.send({
       success: false,
     });
@@ -157,7 +159,7 @@ app.post('/signup', async (req, res) => {
       userId: results.rows[0].id,
     });
   } catch (err) {
-    // There is a UNIQUE constraint on names in the users table
+    // There is a UNIQUE constraint on emails in the users table
     // if email already exists in the users Table, error code 23505
     if (err.code === '23505') {
       return res.send({
@@ -173,7 +175,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.post('/reminders/', async (req, res) => {
+app.post('/reminders', async (req, res) => {
   const { id } = req.body;
   // return all Reminders tied to a User's id
   try {
@@ -196,7 +198,6 @@ app.post('/add-reminder', async (req, res) => {
   // Add a single Reminder and return it
   try {
     const insert = await db.query('INSERT INTO reminders(user_id, reminder) VALUES($1, $2) RETURNING *', [userId, reminder]);
-    console.log('INSERT', insert);
     return res.send({
       success: true,
       reminder: insert.rows[0],

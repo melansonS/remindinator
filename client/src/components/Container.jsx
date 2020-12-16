@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Route, useHistory, useLocation } from 'react-router-dom';
-import Header from './components/Header';
-import Dashboard from './views/Dashboard';
-import Login from './views/Login';
-import Signup from './views/Signup';
+import Header from './Header';
+import Dashboard from '../views/Dashboard';
+import Login from '../views/Login';
+import Signup from '../views/Signup';
 
 const Container = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
