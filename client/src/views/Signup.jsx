@@ -38,9 +38,11 @@ const Signup = (props) => {
       {errorMessage && (<ErrorAlert errorMessage={errorMessage} />)}
       <div className="auth-redirect">
         <p> Already have an account? :</p>
-        <Button type="link">
-          <Link to="/login">Login</Link>
-        </Button>
+        <Link to="/login">
+          <Button type="link">
+            Login
+          </Button>
+        </Link>
       </div>
     </div>
   );

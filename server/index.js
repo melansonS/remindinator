@@ -30,43 +30,6 @@ const dailyEmailReminder = schedule.scheduleJob(scheduler.cronRule, async () => 
   }
 });
 
-app.get('/send-email', async (req, res) => {
-  try {
-    // get all users that have reminders
-    const users = await db.query('SELECT id, email FROM users WHERE EXISTS (SELECT user_id FROM reminders WHERE users.id = reminders.user_id)');
-    users.rows.forEach(async ({ id, email }) => {
-      // get the reminders tied to each of the users
-      const results = await db.query('SELECT reminder FROM reminders WHERE user_id = $1 ORDER BY id ASC', [id]);
-      const reminders = results.rows.map((row) => row.reminder);
-      await sendgrid.sendMail(email, reminders);
-    });
-    return res.send({
-      success: true,
-    });
-  } catch (err) {
-    console.error(err);
-    return res.send({
-      success: false,
-    });
-  }
-});
-
-app.get('/', async (req, res) => {
-  console.log('Cookie:', req.cookies.sid);
-  try {
-    const results = await db.query('SELECT * FROM users');
-    return res.send({
-      success: true,
-      users: results.rows,
-    });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send({
-      success: false,
-    });
-  }
-});
-
 app.post('/auto-login', async (req, res) => {
   const { sid } = req.cookies;
   // if there is user tied to this session, automatically log them in

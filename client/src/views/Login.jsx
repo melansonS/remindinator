@@ -39,9 +39,11 @@ const Login = (props) => {
       {errorMessage && (<ErrorAlert errorMessage={errorMessage} />)}
       <div className="auth-redirect">
         <p> Don&apos;t have an account yet? :</p>
-        <Button type="link">
-          <Link to="/">Signup</Link>
-        </Button>
+        <Link to="/">
+          <Button type="link">
+            Signup
+          </Button>
+        </Link>
       </div>
     </div>
   );

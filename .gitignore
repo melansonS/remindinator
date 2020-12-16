@@ -13,7 +13,7 @@
 
 # misc
 todo.txt
-/client/cache/
+/client/.eslintcache
 */.env
 .DS_Store
 .env.local
