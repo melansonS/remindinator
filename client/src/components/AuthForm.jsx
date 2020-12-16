@@ -3,15 +3,18 @@ import PropTypes from 'prop-types';
 import { Button, Form, Input } from 'antd';
 
 const AuthForm = (props) => {
-  const {
-    form, onFinish, submitValue, validatePassword,
-  } = props;
-
+  const { formSubmit, submitValue, validatePassword } = props;
+  const [form] = Form.useForm();
   const validate = (rule, value) => {
     if (value.length < 7) {
       return Promise.reject('Must be at least 7 Characters long');
     }
     return Promise.resolve();
+  };
+
+  const onFinish = (values) => {
+    formSubmit(values);
+    form.resetFields();
   };
 
   return (
@@ -70,8 +73,7 @@ AuthForm.defaultProps = {
 };
 
 AuthForm.propTypes = {
-  form: PropTypes.objectOf(PropTypes.any).isRequired,
-  onFinish: PropTypes.func.isRequired,
+  formSubmit: PropTypes.func.isRequired,
   submitValue: PropTypes.string,
   validatePassword: PropTypes.bool,
 };

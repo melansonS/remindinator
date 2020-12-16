@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Button } from 'antd';
 import { Link, useHistory } from 'react-router-dom';
-import { Button, Form } from 'antd';
+import API_URL from '../lib/constants';
 import AuthForm from '../components/AuthForm';
 import ErrorAlert from '../components/ErrorAlert';
 
@@ -9,14 +10,13 @@ const Login = (props) => {
   const { handleLoggedUpdate, handleUserIdUpdate } = props;
   const [errorMessage, setErrorMessage] = useState('');
   const history = useHistory();
-  const [form] = Form.useForm();
 
-  const onFinish = async (values) => {
+  const handleLoginSubmit = async (values) => {
     const { email, password } = values;
-    const response = await fetch('http://localhost:8888/login', {
+    const response = await fetch(`${API_URL}/login`, {
       credentials: 'include',
       body: JSON.stringify({
-        email,
+        email: email.toLowerCase(),
         password,
       }),
       headers: { 'content-type': 'application/json' },
@@ -24,22 +24,19 @@ const Login = (props) => {
     });
     const body = await response.json();
     if (body.success) {
-      console.log(body);
       handleLoggedUpdate(true);
       handleUserIdUpdate(body.userId);
       // navigate directly to the Dashboard
       history.push('/dashboard');
     } else {
-      console.log(body.errorMessage);
       setErrorMessage(body.errorMessage);
-      form.resetFields();
     }
   };
 
   return (
     <div className="login-container">
       <h1>Login</h1>
-      <AuthForm form={form} onFinish={onFinish} submitValue="Log in" />
+      <AuthForm formSubmit={handleLoginSubmit} submitValue="Log in" />
       {errorMessage && (<ErrorAlert errorMessage={errorMessage} />)}
       <div className="auth-redirect">
         <p> Don&apos;t have an account yet? :</p>

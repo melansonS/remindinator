@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Route, useHistory, useLocation } from 'react-router-dom';
-import Header from './Header';
+import API_URL from '../lib/constants';
 import Dashboard from '../views/Dashboard';
+import Header from './Header';
 import Login from '../views/Login';
 import Signup from '../views/Signup';
 
@@ -19,7 +20,7 @@ const Container = () => {
   };
 
   const autoLogin = async () => {
-    const response = await fetch('http://localhost:8888/auto-login', {
+    const response = await fetch(`${API_URL}/auto-login`, {
       credentials: 'include',
       method: 'POST',
     });

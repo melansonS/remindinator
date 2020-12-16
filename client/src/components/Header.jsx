@@ -1,17 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
 import { Button } from 'antd';
-import {
-  LogoutOutlined, ReadFilled,
-} from '@ant-design/icons';
+import { LogoutOutlined, ReadFilled } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
+import API_URL from '../lib/constants';
 
 const Header = (props) => {
   const { handleLoggedUpdate, isLoggedIn } = props;
   const history = useHistory();
 
   const logoutSubmit = async () => {
-    const response = await fetch('http://localhost:8888/logout', {
+    const response = await fetch(`${API_URL}/logout`, {
       credentials: 'include',
       method: 'POST',
     });
@@ -20,7 +19,6 @@ const Header = (props) => {
       handleLoggedUpdate(false);
       history.push('/login');
     }
-    console.log(body);
   };
 
   return (

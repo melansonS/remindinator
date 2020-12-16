@@ -10,10 +10,9 @@ const sendgrid = require('./sendgrid');
 const scheduler = require('./scheduler');
 
 const app = express();
-
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: process.env.ORIGIN,
   credentials: true,
 }));
 app.use(express.json());
@@ -55,7 +54,7 @@ app.get('/send-email', async (req, res) => {
 app.get('/', async (req, res) => {
   console.log('Cookie:', req.cookies.sid);
   try {
-    const results = await db.query('select * from users');
+    const results = await db.query('SELECT * FROM users');
     return res.send({
       success: true,
       users: results.rows,
@@ -71,7 +70,7 @@ app.get('/', async (req, res) => {
 app.post('/auto-login', async (req, res) => {
   // if there is user tied to this session, automatically log them in
   try {
-    const results = await db.query('select * from users where email IN (select email from sessions where sid = $1)', [req.cookies.sid]);
+    const results = await db.query('SELECT * FROM users WHERE email IN (SELECT email FROM sessions WHERE sid = $1)', [req.cookies.sid]);
     if (results.rows[0]) {
       return res.send({
         success: true,
@@ -91,11 +90,10 @@ app.post('/auto-login', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-  console.log('Login hit =============');
   const { email, password } = req.body;
+  console.log('login hit', { email, password });
   try {
-    const results = await db.query('select * from users WHERE (email = $1)', [email]);
-    console.log(results);
+    const results = await db.query('SELECT * FROM users WHERE (email = $1)', [email]);
     // If the email is not in the users TABLE, return out
     if (!results.rows[0]) {
       return res.send({
@@ -108,7 +106,7 @@ app.post('/login', async (req, res) => {
     if (validPassword) {
       const sid = nanoid();
       // update the current user's session id
-      const update = await db.query('update sessions set sid = $1 where email = $2', [sid, email]);
+      const update = await db.query('UPDATE sessions SET sid = $1 WHERE email = $2', [sid, email]);
       res.cookie('sid', sid);
       return res.send({
         success: true,

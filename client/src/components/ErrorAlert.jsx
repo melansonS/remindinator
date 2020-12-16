@@ -1,6 +1,6 @@
-import { Alert } from 'antd';
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
+import { Alert } from 'antd';
 
 const ErrorAlert = (props) => {
   const { errorMessage } = props;

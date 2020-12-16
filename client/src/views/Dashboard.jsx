@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Divider, Input } from 'antd';
+import API_URL from '../lib/constants';
 import Reminder from '../components/Reminder';
 
 const Dashboard = (props) => {
@@ -10,7 +11,7 @@ const Dashboard = (props) => {
 
   const getReminders = async (id) => {
     if (!id) { return null; }
-    const response = await fetch('http://localhost:8888/reminders', {
+    const response = await fetch(`${API_URL}/reminders`, {
       method: 'POST',
       body: JSON.stringify({ id }),
       headers: { 'content-type': 'application/json' },
@@ -19,12 +20,11 @@ const Dashboard = (props) => {
     if (body.success) {
       setReminders(body.reminders);
     }
-    console.log(body);
     return null;
   };
 
   const handleDeleteReminder = async (id) => {
-    const response = await fetch('http://localhost:8888/delete-reminder', {
+    const response = await fetch(`${API_URL}/delete-reminder`, {
       method: 'POST',
       body: JSON.stringify({ id }),
       headers: { 'content-type': 'application/json' },
@@ -35,7 +35,6 @@ const Dashboard = (props) => {
       const filtered = reminders.filter((reminder) => reminder.id !== id);
       setReminders(filtered);
     }
-    console.log(body);
   };
 
   const handleAddReminder = async () => {
@@ -44,7 +43,7 @@ const Dashboard = (props) => {
     const regex = /[\w\d]/;
     const found = newReminderValue.match(regex);
     if (!found) { return null; }
-    const response = await fetch('http://localhost:8888/add-reminder', {
+    const response = await fetch(`${API_URL}/add-reminder`, {
       method: 'POST',
       body: JSON.stringify({ reminder: newReminderValue.trim(), userId }),
       headers: { 'content-type': 'application/json' },
@@ -55,7 +54,6 @@ const Dashboard = (props) => {
       setReminders([...reminders, body.reminder]);
       setNewReminderValue('');
     }
-    console.log(body);
     return null;
   };
 
