@@ -7,25 +7,24 @@ import AuthForm from '../components/AuthForm';
 import ErrorAlert from '../components/ErrorAlert';
 
 const Signup = (props) => {
-  const { handleLoggedUpdate, handleUserIdUpdate } = props;
+  const { handleLoggedUpdate } = props;
   const [errorMessage, setErrorMessage] = useState('');
   const history = useHistory();
 
   const handleSignupSubmit = async (values) => {
     const { email, password } = values;
     const response = await fetch(`${API_URL}/signup`, {
-      credentials: 'include',
       body: JSON.stringify({
         email: email.toLowerCase(),
         password,
       }),
+      credentials: 'include',
       headers: { 'content-type': 'application/json' },
       method: 'POST',
     });
     const body = await response.json();
     if (body.success) {
       handleLoggedUpdate(true);
-      handleUserIdUpdate(body.userId);
       // navigate directly to the Dashboard
       history.push('/dashboard');
     } else {
@@ -49,7 +48,6 @@ const Signup = (props) => {
 
 Signup.propTypes = {
   handleLoggedUpdate: PropTypes.func.isRequired,
-  handleUserIdUpdate: PropTypes.func.isRequired,
 };
 
 export default Signup;

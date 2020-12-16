@@ -8,15 +8,11 @@ import Signup from '../views/Signup';
 
 const Container = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState(null);
   const history = useHistory();
   const location = useLocation();
 
   const handleLoggedUpdate = (value) => {
     setIsLoggedIn(value);
-  };
-  const handleUserIdUpdate = (value) => {
-    setUserId(value);
   };
 
   const autoLogin = async () => {
@@ -27,7 +23,6 @@ const Container = () => {
     const body = await response.json();
     setIsLoggedIn(body.success);
     if (body.success) {
-      setUserId(body.userId);
       // navigate directly to the Dashboard
       history.push('/dashboard');
     } else if (location.pathname !== '/login') {
@@ -45,21 +40,15 @@ const Container = () => {
       <div className="main-container">
         { isLoggedIn ? (
           <Route path="/dashboard">
-            <Dashboard userId={userId} />
+            <Dashboard />
           </Route>
         ) : (
           <>
             <Route path="/" exact>
-              <Signup
-                handleLoggedUpdate={handleLoggedUpdate}
-                handleUserIdUpdate={handleUserIdUpdate}
-              />
+              <Signup handleLoggedUpdate={handleLoggedUpdate} />
             </Route>
             <Route path="/login">
-              <Login
-                handleLoggedUpdate={handleLoggedUpdate}
-                handleUserIdUpdate={handleUserIdUpdate}
-              />
+              <Login handleLoggedUpdate={handleLoggedUpdate} />
             </Route>
           </>
         )}

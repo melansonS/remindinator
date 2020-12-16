@@ -68,13 +68,13 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/auto-login', async (req, res) => {
+  const { sid } = req.cookies;
   // if there is user tied to this session, automatically log them in
   try {
-    const results = await db.query('SELECT * FROM users WHERE email IN (SELECT email FROM sessions WHERE sid = $1)', [req.cookies.sid]);
+    const results = await db.query('SELECT * FROM users WHERE id IN (SELECT user_id FROM sessions WHERE sid = $1)', [sid]);
     if (results.rows[0]) {
       return res.send({
         success: true,
-        userId: results.rows[0].id,
       });
     }
     return res.send({
@@ -106,7 +106,7 @@ app.post('/login', async (req, res) => {
     if (validPassword) {
       const sid = nanoid();
       // update the current user's session id
-      const update = await db.query('UPDATE sessions SET sid = $1 WHERE email = $2', [sid, email]);
+      const update = await db.query('UPDATE sessions SET sid = $1 WHERE user_id IN (SELECT id FROM users WHERE email = $2)', [sid, email]);
       res.cookie('sid', sid);
       return res.send({
         success: true,
@@ -150,11 +150,10 @@ app.post('/signup', async (req, res) => {
     // hash given password
     const hash = await bcrypt.hash(password, 10);
     const results = await db.query('INSERT INTO users (email, hash) values($1, $2) RETURNING id', [email, hash]);
-    const insert = await db.query('INSERT INTO sessions(sid, email) values($1, $2)', [sid, email]);
+    const insert = await db.query('INSERT INTO sessions(sid, user_id) values($1, $2)', [sid, results.rows[0].id]);
     res.cookie('sid', sid);
     return res.send({
       success: true,
-      userId: results.rows[0].id,
     });
   } catch (err) {
     // There is a UNIQUE constraint on emails in the users table
@@ -174,10 +173,10 @@ app.post('/signup', async (req, res) => {
 });
 
 app.post('/reminders', async (req, res) => {
-  const { id } = req.body;
+  const { sid } = req.cookies;
   // return all Reminders tied to a User's id
   try {
-    const results = await db.query('SELECT * FROM reminders WHERE user_id = $1 ORDER BY id ASC', [id]);
+    const results = await db.query('SELECT * FROM reminders WHERE user_id IN (SELECT user_id FROM sessions WHERE sid = $1) ORDER BY id ASC', [sid]);
     return res.send({
       success: true,
       reminders: results.rows,
@@ -192,9 +191,12 @@ app.post('/reminders', async (req, res) => {
 });
 
 app.post('/add-reminder', async (req, res) => {
-  const { reminder, userId } = req.body;
+  const { sid } = req.cookies;
+  const { reminder } = req.body;
   // Add a single Reminder and return it
   try {
+    const results = await db.query('SELECT user_id FROM sessions WHERE sid = $1', [sid]);
+    const userId = results.rows[0].user_id;
     const insert = await db.query('INSERT INTO reminders(user_id, reminder) VALUES($1, $2) RETURNING *', [userId, reminder]);
     return res.send({
       success: true,
