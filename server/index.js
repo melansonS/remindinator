@@ -54,7 +54,6 @@ app.post('/auto-login', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('login hit', { email, password });
   try {
     const results = await db.query('SELECT * FROM users WHERE (email = $1)', [email]);
     // If the email is not in the users TABLE, return out
