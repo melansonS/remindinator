@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { Button, Form, Input } from 'antd';
 
 const AuthForm = (props) => {
-  const { formSubmit, submitValue, validatePassword } = props;
+  const {
+    formSubmit, submitValue, validateEmail, validatePassword,
+  } = props;
   const [form] = Form.useForm();
   const validate = (rule, value) => {
     if (value.length < 7) {
@@ -30,7 +32,7 @@ const AuthForm = (props) => {
         label="Email"
         rules={[
           {
-            type: 'email',
+            type: validateEmail ? 'email' : null,
             message: 'The input is not valid Email!',
           },
           {
@@ -69,12 +71,14 @@ const AuthForm = (props) => {
 
 AuthForm.defaultProps = {
   submitValue: 'Submit',
+  validateEmail: false,
   validatePassword: false,
 };
 
 AuthForm.propTypes = {
   formSubmit: PropTypes.func.isRequired,
   submitValue: PropTypes.string,
+  validateEmail: PropTypes.bool,
   validatePassword: PropTypes.bool,
 };
 
