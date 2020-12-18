@@ -34,14 +34,17 @@ const Signup = (props) => {
   return (
     <div className="login-container">
       <h1>Signup</h1>
-      <AuthForm formSubmit={handleSignupSubmit} submitValue="Sign up" validatePassword />
+      <AuthForm
+        formSubmit={handleSignupSubmit}
+        submitValue="Sign up"
+        validateEmail
+        validatePassword
+      />
       {errorMessage && (<ErrorAlert errorMessage={errorMessage} />)}
       <div className="auth-redirect">
         <p> Already have an account? :</p>
         <Link to="/login">
-          <Button type="link">
-            Login
-          </Button>
+          Login
         </Link>
       </div>
     </div>

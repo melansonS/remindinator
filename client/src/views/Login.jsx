@@ -40,9 +40,7 @@ const Login = (props) => {
       <div className="auth-redirect">
         <p> Don&apos;t have an account yet? :</p>
         <Link to="/">
-          <Button type="link">
-            Signup
-          </Button>
+          Signup
         </Link>
       </div>
     </div>

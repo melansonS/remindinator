@@ -36,10 +36,13 @@
   justify-content: center;
 }
 
-.auth-redirect a button:hover,
-.auth-redirect a button:focus {
-  background-color: #1890ff;
-  color: white;
+.auth-redirect a {
+  margin-left: 8px;
+}
+
+.auth-redirect a:hover,
+.auth-redirect a:focus {
+  text-decoration: underline;
 }
 
 .auth-redirect p {
