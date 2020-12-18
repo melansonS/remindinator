@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Divider, Input } from 'antd';
-import API_URL from '../lib/constants';
 import Reminder from '../components/Reminder';
 
 const Dashboard = () => {

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Button } from 'antd';
 import { LogoutOutlined, ReadFilled } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
-import API_URL from '../lib/constants';
 
 const Header = (props) => {
   const { handleLoggedUpdate, isLoggedIn } = props;

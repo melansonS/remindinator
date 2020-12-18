@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Route, useHistory, useLocation } from 'react-router-dom';
-import API_URL from '../lib/constants';
 import Dashboard from '../views/Dashboard';
 import Header from './Header';
 import Login from '../views/Login';
