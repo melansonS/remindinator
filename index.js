@@ -5,9 +5,12 @@ const cors = require('cors');
 const express = require('express');
 const { nanoid } = require('nanoid');
 const schedule = require('node-schedule');
+const path = require('path');
 const db = require('./db');
 const sendgrid = require('./sendgrid');
 const scheduler = require('./scheduler');
+
+const PORT = process.env.PORT || 8888;
 
 const app = express();
 app.use(cookieParser());
@@ -16,6 +19,10 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+
+if (process.env.NODE_ENV === 'production') {
+  app.use('/', express.static(path.join(__dirname, 'client/build')));
+}
 
 const dailyEmailReminder = schedule.scheduleJob(scheduler.cronRule, async () => {
   try {
@@ -190,6 +197,10 @@ app.post('/api/v1/delete-reminder', async (req, res) => {
   }
 });
 
-app.listen(8888, () => {
-  console.log('listing on port 8888');
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build/index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`listing on port ${PORT}`);
 });

@@ -8,7 +8,7 @@ const Dashboard = () => {
   const [newReminderValue, setNewReminderValue] = useState('');
 
   const getReminders = async () => {
-    const response = await fetch(`${API_URL}/reminders`, {
+    const response = await fetch('/api/v1/reminders', {
       credentials: 'include',
       headers: { 'content-type': 'application/json' },
     });
@@ -19,7 +19,7 @@ const Dashboard = () => {
   };
 
   const handleDeleteReminder = async (id) => {
-    const response = await fetch(`${API_URL}/delete-reminder`, {
+    const response = await fetch('/api/v1/delete-reminder', {
       body: JSON.stringify({ id }),
       headers: { 'content-type': 'application/json' },
       method: 'POST',
@@ -38,7 +38,7 @@ const Dashboard = () => {
     const regex = /[\w\d]/;
     const found = newReminderValue.match(regex);
     if (!found) { return null; }
-    const response = await fetch(`${API_URL}/add-reminder`, {
+    const response = await fetch('/api/v1/add-reminder', {
       body: JSON.stringify({ reminder: newReminderValue.trim() }),
       credentials: 'include',
       headers: { 'content-type': 'application/json' },

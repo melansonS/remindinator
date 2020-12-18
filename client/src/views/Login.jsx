@@ -13,7 +13,7 @@ const Login = (props) => {
 
   const handleLoginSubmit = async (values) => {
     const { email, password } = values;
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch('/api/v1/login', {
       body: JSON.stringify({
         email: email.toLowerCase(),
         password,

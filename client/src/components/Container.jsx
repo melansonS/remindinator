@@ -16,7 +16,7 @@ const Container = () => {
   };
 
   const autoLogin = async () => {
-    const response = await fetch(`${API_URL}/auto-login`, {
+    const response = await fetch('/api/v1/auto-login', {
       credentials: 'include',
       method: 'POST',
     });

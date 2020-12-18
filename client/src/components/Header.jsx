@@ -10,7 +10,7 @@ const Header = (props) => {
   const history = useHistory();
 
   const logoutSubmit = async () => {
-    const response = await fetch(`${API_URL}/logout`, {
+    const response = await fetch('/api/v1/logout', {
       credentials: 'include',
       method: 'POST',
     });

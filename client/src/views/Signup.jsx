@@ -13,7 +13,7 @@ const Signup = (props) => {
 
   const handleSignupSubmit = async (values) => {
     const { email, password } = values;
-    const response = await fetch(`${API_URL}/signup`, {
+    const response = await fetch('/api/v1/signup', {
       body: JSON.stringify({
         email: email.toLowerCase(),
         password,
