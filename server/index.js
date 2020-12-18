@@ -12,7 +12,7 @@ const scheduler = require('./scheduler');
 const app = express();
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.ORIGIN,
+  origin: process.env.CORS_ORIGIN,
   credentials: true,
 }));
 app.use(express.json());
@@ -30,7 +30,7 @@ const dailyEmailReminder = schedule.scheduleJob(scheduler.cronRule, async () => 
   }
 });
 
-app.post('/auto-login', async (req, res) => {
+app.post('/api/v1/auto-login', async (req, res) => {
   const { sid } = req.cookies;
   // if there is user tied to this session, automatically log them in
   try {
@@ -52,7 +52,7 @@ app.post('/auto-login', async (req, res) => {
   }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/api/v1/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const results = await db.query('SELECT * FROM users WHERE (email = $1)', [email]);
@@ -89,7 +89,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/logout', async (req, res) => {
+app.post('/api/v1/logout', async (req, res) => {
   const { sid } = req.cookies;
   // set the session id for the current user to null
   try {
@@ -105,7 +105,7 @@ app.post('/logout', async (req, res) => {
   }
 });
 
-app.post('/signup', async (req, res) => {
+app.post('/api/v1/signup', async (req, res) => {
   const { email, password } = req.body;
   const sid = nanoid();
   try {
@@ -134,7 +134,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.post('/reminders', async (req, res) => {
+app.get('/api/v1/reminders', async (req, res) => {
   const { sid } = req.cookies;
   // return all Reminders tied to a User's id
   try {
@@ -152,7 +152,7 @@ app.post('/reminders', async (req, res) => {
   }
 });
 
-app.post('/add-reminder', async (req, res) => {
+app.post('/api/v1/add-reminder', async (req, res) => {
   const { sid } = req.cookies;
   const { reminder } = req.body;
   // Add a single Reminder and return it
@@ -173,7 +173,7 @@ app.post('/add-reminder', async (req, res) => {
   }
 });
 
-app.post('/delete-reminder', async (req, res) => {
+app.post('/api/v1/delete-reminder', async (req, res) => {
   const { id } = req.body;
   // delete a single reminder
   try {

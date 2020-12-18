@@ -11,7 +11,6 @@ const Dashboard = () => {
     const response = await fetch(`${API_URL}/reminders`, {
       credentials: 'include',
       headers: { 'content-type': 'application/json' },
-      method: 'POST',
     });
     const body = await response.json();
     if (body.success) {
@@ -59,7 +58,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div>
+    <div className="dashboard-container">
       <h1 className="dashboard-header">Dashboard</h1>
       <div className="dashboard-add-reminder">
         <Input.TextArea
