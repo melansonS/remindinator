@@ -20,19 +20,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
-console.log("+++++++++++++++++++++++++++++++++++ \n\n", process.env.SENDGRID_API_KEY);
-
-console.log("\n\nbefore first db request");
-const dbTest = async ()=>{
-  const results = await db.query("SELECT * FROM users");
-}
-dbTest();
-console.log("\n\after first db request");
-
 if (process.env.NODE_ENV === 'production') {
   app.use('/', express.static(path.join(__dirname, 'client/build')));
 }
-
 
 const dailyEmailReminder = schedule.scheduleJob(scheduler.cronRule, async () => {
   try {
