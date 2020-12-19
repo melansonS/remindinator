@@ -1,9 +1,9 @@
 const schedule = require('node-schedule');
 
 const cronRule = new schedule.RecurrenceRule();
-// TODO: set real job time
-cronRule.hour = 5;
-cronRule.minute = 45;
+// Heroku server is at GMT + 00:00
+cronRule.hour = 12; // local time is -5:00, so this should go off at 7:15
+cronRule.minute = 15;
 
 module.exports = {
   cronRule,
