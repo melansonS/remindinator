@@ -5,7 +5,7 @@ const cronRule = new schedule.RecurrenceRule();
 // cronRule.hour = 12; // local time is -5:00, so this should go off at 7:15
 // cronRule.minute = 15;
 cronRule.hour = 18; 
-cronRule.minute = 49;
+cronRule.minute = 54;
 
 module.exports = {
   cronRule,
