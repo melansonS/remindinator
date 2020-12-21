@@ -11,7 +11,6 @@ const Header = (props) => {
   const logoutSubmit = async () => {
     const response = await fetch('/api/v1/logout', {
       credentials: 'include',
-      method: 'POST',
     });
     const body = await response.json();
     if (body.success) {

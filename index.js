@@ -4,8 +4,8 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
 const { nanoid } = require('nanoid');
-const schedule = require('node-schedule');
 const path = require('path');
+const schedule = require('node-schedule');
 const db = require('./db');
 const sendgrid = require('./sendgrid');
 const scheduler = require('./scheduler');
@@ -37,7 +37,7 @@ const dailyEmailReminder = schedule.scheduleJob(scheduler.cronRule, async () => 
   }
 });
 
-app.post('/api/v1/auto-login', async (req, res) => {
+app.get('/api/v1/auto-login', async (req, res) => {
   const { sid } = req.cookies;
   // if there is user tied to this session, automatically log them in
   try {
@@ -51,7 +51,7 @@ app.post('/api/v1/auto-login', async (req, res) => {
       success: false,
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(500).send({
       success: false,
       errorMessage: 'Something went wrong',
@@ -88,7 +88,7 @@ app.post('/api/v1/login', async (req, res) => {
       errorMessage: 'Incorrect Password',
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(500).send({
       success: false,
       errorMessage: 'Something went wrong',
@@ -96,7 +96,7 @@ app.post('/api/v1/login', async (req, res) => {
   }
 });
 
-app.post('/api/v1/logout', async (req, res) => {
+app.get('/api/v1/logout', async (req, res) => {
   const { sid } = req.cookies;
   // set the session id for the current user to null
   try {
@@ -105,6 +105,7 @@ app.post('/api/v1/logout', async (req, res) => {
       success: true,
     });
   } catch (err) {
+    console.error(err);
     return res.status(500).send({
       success: false,
       errorMessage: 'Something went wrong',
@@ -133,7 +134,7 @@ app.post('/api/v1/signup', async (req, res) => {
         errorMessage: 'Email already in use',
       });
     }
-    console.log('ERROR', err);
+    console.error(err);
     return res.status(500).send({
       success: false,
       errorMessage: 'Something went wrong',
@@ -151,7 +152,7 @@ app.get('/api/v1/reminders', async (req, res) => {
       reminders: results.rows,
     });
   } catch (err) {
-    console.log('ERROR', err);
+    console.error(err);
     return res.status(500).send({
       success: false,
       errorMessage: 'Something went wrong',
@@ -172,7 +173,7 @@ app.post('/api/v1/add-reminder', async (req, res) => {
       reminder: insert.rows[0],
     });
   } catch (err) {
-    console.log('ERROR', err);
+    console.error(err);
     return res.status(500).send({
       success: false,
       errorMessage: 'Something went wrong',
@@ -189,7 +190,7 @@ app.post('/api/v1/delete-reminder', async (req, res) => {
       success: true,
     });
   } catch (err) {
-    console.log('ERROR', err);
+    console.error(err);
     return res.status(500).send({
       success: false,
       errorMessage: 'Something went wrong',
