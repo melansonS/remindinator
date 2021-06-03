@@ -1,4 +1,4 @@
-const { Pool } = require('pg');
+const { Pool } = require("pg");
 
 const devConfig = {
   user: process.env.PGUSER,
@@ -10,9 +10,14 @@ const devConfig = {
 
 const proConfig = {
   connectionString: process.env.DATABASE_URL, // from heroku
+  ssl: {
+    rejectUnauthorized: false,
+  },
 };
 
-const pool = new Pool(process.env.NODE_ENV === 'production' ? proConfig : devConfig);
+const pool = new Pool(
+  process.env.NODE_ENV === "production" ? proConfig : devConfig
+);
 
 module.exports = {
   query: (text, params, callback) => pool.query(text, params, callback),
