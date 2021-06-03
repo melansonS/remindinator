@@ -1,47 +1,55 @@
-require('dotenv').config();
-const bcrypt = require('bcrypt');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const express = require('express');
-const { nanoid } = require('nanoid');
-const path = require('path');
-const schedule = require('node-schedule');
-const db = require('./db');
-const sendgrid = require('./sendgrid');
-const scheduler = require('./scheduler');
+require("dotenv").config();
+const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+const express = require("express");
+const { nanoid } = require("nanoid");
+const path = require("path");
+const schedule = require("node-schedule");
+const db = require("./db");
+const sendgrid = require("./sendgrid");
+const scheduler = require("./scheduler");
 
 const PORT = process.env.PORT || 8888;
 
 const app = express();
 app.use(cookieParser());
-app.use(cors({
-  origin: process.env.CORS_ORIGIN,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
-if (process.env.NODE_ENV === 'production') {
-  app.use('/', express.static(path.join(__dirname, 'client/build')));
+if (process.env.NODE_ENV === "production") {
+  app.use("/", express.static(path.join(__dirname, "client/build")));
 }
 
-const dailyEmailReminder = schedule.scheduleJob(scheduler.cronRule, async () => {
-  try {
-    const email = await sendgrid.sendEmails();
-    console.log('EMAILS SENT!', email);
-  } catch (error) {
-    console.error(error);
+const dailyEmailReminder = schedule.scheduleJob(
+  scheduler.cronRule,
+  async () => {
+    try {
+      const email = await sendgrid.sendEmails();
+      console.log("EMAILS SENT!", email);
+    } catch (error) {
+      console.error(error);
 
-    if (error.response) {
-      console.error(error.response.body);
+      if (error.response) {
+        console.error(error.response.body);
+      }
     }
   }
-});
+);
 
-app.get('/api/v1/auto-login', async (req, res) => {
+app.get("/api/v1/auto-login", async (req, res) => {
   const { sid } = req.cookies;
   // if there is user tied to this session, automatically log them in
   try {
-    const results = await db.query('SELECT * FROM users WHERE id IN (SELECT user_id FROM sessions WHERE sid = $1)', [sid]);
+    const results = await db.query(
+      "SELECT * FROM users WHERE id IN (SELECT user_id FROM sessions WHERE sid = $1)",
+      [sid]
+    );
     if (results.rows[0]) {
       return res.send({
         success: true,
@@ -54,20 +62,22 @@ app.get('/api/v1/auto-login', async (req, res) => {
     console.error(err);
     return res.status(500).send({
       success: false,
-      errorMessage: 'Something went wrong',
+      errorMessage: `Something went wrong: ${err.message}`,
     });
   }
 });
 
-app.post('/api/v1/login', async (req, res) => {
+app.post("/api/v1/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const results = await db.query('SELECT * FROM users WHERE (email = $1)', [email]);
+    const results = await db.query("SELECT * FROM users WHERE (email = $1)", [
+      email,
+    ]);
     // If the email is not in the users TABLE, return out
     if (!results.rows[0]) {
       return res.send({
         success: false,
-        errorMessage: 'Invalid email',
+        errorMessage: "Invalid email",
       });
     }
     const validPassword = await bcrypt.compare(password, results.rows[0].hash);
@@ -75,8 +85,11 @@ app.post('/api/v1/login', async (req, res) => {
     if (validPassword) {
       const sid = nanoid();
       // update the current user's session id
-      const update = await db.query('UPDATE sessions SET sid = $1 WHERE user_id IN (SELECT id FROM users WHERE email = $2)', [sid, email]);
-      res.cookie('sid', sid);
+      const update = await db.query(
+        "UPDATE sessions SET sid = $1 WHERE user_id IN (SELECT id FROM users WHERE email = $2)",
+        [sid, email]
+      );
+      res.cookie("sid", sid);
       return res.send({
         success: true,
         userId: results.rows[0].id,
@@ -85,22 +98,25 @@ app.post('/api/v1/login', async (req, res) => {
     // Else incorect password, return error message
     return res.send({
       success: false,
-      errorMessage: 'Incorrect Password',
+      errorMessage: "Incorrect Password",
     });
   } catch (err) {
     console.error(err);
     return res.status(500).send({
       success: false,
-      errorMessage: 'Something went wrong',
+      errorMessage: `Something went wrong: ${err.message}`,
     });
   }
 });
 
-app.get('/api/v1/logout', async (req, res) => {
+app.get("/api/v1/logout", async (req, res) => {
   const { sid } = req.cookies;
   // set the session id for the current user to null
   try {
-    const results = await db.query('UPDATE sessions SET sid = $1 WHERE sid = $2', [null, sid]);
+    const results = await db.query(
+      "UPDATE sessions SET sid = $1 WHERE sid = $2",
+      [null, sid]
+    );
     return res.send({
       success: true,
     });
@@ -108,45 +124,54 @@ app.get('/api/v1/logout', async (req, res) => {
     console.error(err);
     return res.status(500).send({
       success: false,
-      errorMessage: 'Something went wrong',
+      errorMessage: `Something went wrong: ${err.message}`,
     });
   }
 });
 
-app.post('/api/v1/signup', async (req, res) => {
+app.post("/api/v1/signup", async (req, res) => {
   const { email, password } = req.body;
   const sid = nanoid();
   try {
     // hash given password
     const hash = await bcrypt.hash(password, 10);
-    const results = await db.query('INSERT INTO users (email, hash) values($1, $2) RETURNING id', [email, hash]);
-    const insert = await db.query('INSERT INTO sessions(sid, user_id) values($1, $2)', [sid, results.rows[0].id]);
-    res.cookie('sid', sid);
+    const results = await db.query(
+      "INSERT INTO users (email, hash) values($1, $2) RETURNING id",
+      [email, hash]
+    );
+    const insert = await db.query(
+      "INSERT INTO sessions(sid, user_id) values($1, $2)",
+      [sid, results.rows[0].id]
+    );
+    res.cookie("sid", sid);
     return res.send({
       success: true,
     });
   } catch (err) {
     // There is a UNIQUE constraint on emails in the users table
     // if email already exists in the users Table, error code 23505
-    if (err.code === '23505') {
+    if (err.code === "23505") {
       return res.send({
         success: false,
-        errorMessage: 'Email already in use',
+        errorMessage: "Email already in use",
       });
     }
     console.error(err);
     return res.status(500).send({
       success: false,
-      errorMessage: 'Something went wrong',
+      errorMessage: `Something went wrong: ${err.message}`,
     });
   }
 });
 
-app.get('/api/v1/reminders', async (req, res) => {
+app.get("/api/v1/reminders", async (req, res) => {
   const { sid } = req.cookies;
   // return all Reminders tied to a User's id
   try {
-    const results = await db.query('SELECT * FROM reminders WHERE user_id IN (SELECT user_id FROM sessions WHERE sid = $1) ORDER BY id ASC', [sid]);
+    const results = await db.query(
+      "SELECT * FROM reminders WHERE user_id IN (SELECT user_id FROM sessions WHERE sid = $1) ORDER BY id ASC",
+      [sid]
+    );
     return res.send({
       success: true,
       reminders: results.rows,
@@ -155,19 +180,25 @@ app.get('/api/v1/reminders', async (req, res) => {
     console.error(err);
     return res.status(500).send({
       success: false,
-      errorMessage: 'Something went wrong',
+      errorMessage: `Something went wrong: ${err.message}`,
     });
   }
 });
 
-app.post('/api/v1/add-reminder', async (req, res) => {
+app.post("/api/v1/add-reminder", async (req, res) => {
   const { sid } = req.cookies;
   const { reminder } = req.body;
   // Add a single Reminder and return it
   try {
-    const results = await db.query('SELECT user_id FROM sessions WHERE sid = $1', [sid]);
+    const results = await db.query(
+      "SELECT user_id FROM sessions WHERE sid = $1",
+      [sid]
+    );
     const userId = results.rows[0].user_id;
-    const insert = await db.query('INSERT INTO reminders(user_id, reminder) VALUES($1, $2) RETURNING *', [userId, reminder]);
+    const insert = await db.query(
+      "INSERT INTO reminders(user_id, reminder) VALUES($1, $2) RETURNING *",
+      [userId, reminder]
+    );
     return res.send({
       success: true,
       reminder: insert.rows[0],
@@ -176,16 +207,16 @@ app.post('/api/v1/add-reminder', async (req, res) => {
     console.error(err);
     return res.status(500).send({
       success: false,
-      errorMessage: 'Something went wrong',
+      errorMessage: `Something went wrong: ${err.message}`,
     });
   }
 });
 
-app.post('/api/v1/delete-reminder', async (req, res) => {
+app.post("/api/v1/delete-reminder", async (req, res) => {
   const { id } = req.body;
   // delete a single reminder
   try {
-    const del = await db.query('DELETE FROM reminders WHERE id = $1', [id]);
+    const del = await db.query("DELETE FROM reminders WHERE id = $1", [id]);
     return res.send({
       success: true,
     });
@@ -193,13 +224,13 @@ app.post('/api/v1/delete-reminder', async (req, res) => {
     console.error(err);
     return res.status(500).send({
       success: false,
-      errorMessage: 'Something went wrong',
+      errorMessage: `Something went wrong: ${err.message}`,
     });
   }
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build/index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/build/index.html"));
 });
 
 app.listen(PORT, () => {
